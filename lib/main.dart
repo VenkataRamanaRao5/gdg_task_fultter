@@ -45,6 +45,31 @@ class Product {
   final String imageURL;
   final double rate;
   final int count;
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        "id": int _,
+        "title": String title,
+        "price": double price,
+        "description": String _,
+        "category": String category,
+        "image": String imageURL,
+        "rating": {
+          "rate": double rate,
+          "count": int count
+        }
+      } => Product(
+            title: title, 
+            price: price, 
+            category: category, 
+            imageURL: imageURL, 
+            rate: rate, 
+            count: count
+          ),
+      _ => throw const FormatException("Failed to load JSON"),
+    };
+  }
 }
 
 class ProductCard extends StatelessWidget {
@@ -53,6 +78,8 @@ class ProductCard extends StatelessWidget {
   final Product product;
 
   final Color starColor = Colors.amber.shade400;
+  final Color cardColor = Colors.black38;
+  final Color textColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +89,11 @@ class ProductCard extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: Theme.of(context).colorScheme.primary
+            width: 3,
           ),
           borderRadius: BorderRadius.circular(15.0),
         ),
+        clipBehavior: Clip.antiAlias,
         child: SizedBox(
           height: 200.0,
           width: MediaQuery.of(context).size.width - 20,
@@ -75,7 +103,7 @@ class ProductCard extends StatelessWidget {
                 right: 10,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
-                  child: Container(
+                  child: SizedBox(
                     height: 176,
                     child: Image.network(
                       product.imageURL,
@@ -84,10 +112,22 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
               ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      cardColor.withOpacity(1),
+                      cardColor.withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
               SizedBox(
                 width: 280,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -98,23 +138,26 @@ class ProductCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: textColor,
                         ),
                       ),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 9,),
                       Text(
                         product.category,
                         style: TextStyle(
                           fontSize: 20,
+                          color: textColor,
                         ),
                       ),
-                      SizedBox(height: 7,),
+                      const SizedBox(height: 7,),
                       Text(
                         '\$${product.price}',
                         style: TextStyle(
                           fontSize: 18,
+                          color: textColor,
                         ),
                       ),
-                      SizedBox(height: 6,),
+                      const SizedBox(height: 6,),
                       Row(
                         children: [
                           ...List.generate(5, (int index) => 
@@ -123,7 +166,10 @@ class ProductCard extends StatelessWidget {
                             : Icon(Icons.star_border, color: starColor)
                           ),
                           Text(
-                            "${product.rate}  (${product.count})"
+                            "${product.rate}  (${product.count})",
+                            style: TextStyle(
+                              color: textColor
+                            ),
                           ),
                         ],
                       )
