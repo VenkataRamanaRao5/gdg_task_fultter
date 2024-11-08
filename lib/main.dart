@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Task',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -47,71 +48,91 @@ class Product {
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
+  ProductCard({super.key, required this.product});
 
   final Product product;
+
+  final Color starColor = Colors.amber.shade400;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary
+    return Padding(
+      padding: const EdgeInsets.all(7.0),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.primary
+          ),
+          borderRadius: BorderRadius.circular(15.0),
         ),
-        borderRadius: BorderRadius.circular(2.0),
-      ),
-      child: SizedBox(
-        height: 200.0,
-        width: MediaQuery.of(context).size.width - 20,
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              right: 10,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Container(
-                  height: 176,
-                  child: Image.network(
-                    product.imageURL,
-                    fit: BoxFit.scaleDown,
+        child: SizedBox(
+          height: 200.0,
+          width: MediaQuery.of(context).size.width - 20,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                right: 10,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Container(
+                    height: 176,
+                    child: Image.network(
+                      product.imageURL,
+                      fit: BoxFit.scaleDown,
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 280,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              SizedBox(
+                width: 280,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.title,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      product.category,
-                      style: TextStyle(
-                        fontSize: 18,
+                      SizedBox(height: 10,),
+                      Text(
+                        product.category,
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '\$${product.price}',
-                      style: TextStyle(
-                        fontSize: 18,
+                      SizedBox(height: 7,),
+                      Text(
+                        '\$${product.price}',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 6,),
+                      Row(
+                        children: [
+                          ...List.generate(5, (int index) => 
+                            (index + 1 <= product.rate.round()) ? Icon(Icons.star, color: starColor,)
+                            : (index < product.rate) ? Icon(Icons.star_half, color: starColor) 
+                            : Icon(Icons.star_border, color: starColor)
+                          ),
+                          Text(
+                            "${product.rate}  (${product.count})"
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -126,8 +147,11 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Products"),
       ),
-      body: const Center(
-        child: ProductCard(product: Product(title: "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops", price: 109.95, category:  "men's clothing", imageURL: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", rate: 3.9, count: 120)),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Center(
+          child: ProductCard(product: const Product(title: "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops", price: 109.95, category:  "men's clothing", imageURL: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", rate: 4.4, count: 120))
+        ),
         ),
     );
   }
