@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -40,35 +43,27 @@ class Product {
   });
 
   final String title;
-  final double price;
+  final num price;
   final String category;
   final String imageURL;
-  final double rate;
+  final num rate;
   final int count;
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        "id": int _,
-        "title": String title,
-        "price": double price,
-        "description": String _,
-        "category": String category,
-        "image": String imageURL,
-        "rating": {
-          "rate": double rate,
-          "count": int count
-        }
-      } => Product(
-            title: title, 
-            price: price, 
-            category: category, 
-            imageURL: imageURL, 
-            rate: rate, 
-            count: count
-          ),
-      _ => throw const FormatException("Failed to load JSON"),
-    };
+    try{
+      return Product(
+              title: json["title"], 
+              price: json["price"], 
+              category: json["category"], 
+              imageURL: json["image"], 
+              rate: json["rating"]["rate"], 
+              count: json["rating"]["count"]
+            );
+    } catch (e){
+      print("fuck $e");
+      throw Exception("fuck $e");
+    }
+    
   }
 }
 
@@ -141,7 +136,7 @@ class ProductCard extends StatelessWidget {
                           color: textColor,
                         ),
                       ),
-                      const SizedBox(height: 9,),
+                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 9.0),),
                       Text(
                         product.category,
                         style: TextStyle(
@@ -149,7 +144,7 @@ class ProductCard extends StatelessWidget {
                           color: textColor,
                         ),
                       ),
-                      const SizedBox(height: 7,),
+                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 7.0),),
                       Text(
                         '\$${product.price}',
                         style: TextStyle(
@@ -157,7 +152,7 @@ class ProductCard extends StatelessWidget {
                           color: textColor,
                         ),
                       ),
-                      const SizedBox(height: 6,),
+                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 7.0),),
                       Row(
                         children: [
                           ...List.generate(5, (int index) => 
@@ -185,7 +180,29 @@ class ProductCard extends StatelessWidget {
   }
 }
 
+Future<List<Product>> fetchProduct() async {
+  final response = await http.get(
+    Uri.parse("https://fakestoreapi.com/products/?limit=10")
+  );
+
+  if (response.statusCode == 200){
+    List products = jsonDecode(response.body);
+    print("${products.runtimeType}, ${products[0]["id"]}, ");
+    return List<Product>.from(products.map((obj) => Product.fromJson(obj)));
+  } else {
+    throw Exception("Failed to load products");
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
+  late Future<List<Product>> futureProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    futureProduct = fetchProduct();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,7 +213,21 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Center(
-          child: ProductCard(product: const Product(title: "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops", price: 109.95, category:  "men's clothing", imageURL: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", rate: 4.4, count: 120))
+          child: FutureBuilder<List<Product>>(
+            future: futureProduct, 
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.from(snapshot.data!.map((product) => ProductCard(product: product))),
+                );
+              } else if(snapshot.hasError) {
+                return Text("Fuck 2 ${snapshot.error}");
+              }
+
+              return const CircularProgressIndicator();
+            }
+          )
         ),
         ),
     );
