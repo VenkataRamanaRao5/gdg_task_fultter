@@ -132,19 +132,20 @@ class ProductCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product.title,
+                        product.category,
                         style: TextStyle(
-                          fontSize: 19,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
                           color: textColor,
                         ),
                       ),
                       Flexible(child: Container(constraints: BoxConstraints(maxHeight: 12.0),)),
                       Text(
-                        product.category,
+                        product.title,
                         style: TextStyle(
-                          fontSize: 19,
-                          color: textColor,
+                          fontSize: 18,
+                          color: textColor.withOpacity(0.90),
                           fontFamily: "Times New Roman"
                         ),
                       ),
@@ -152,7 +153,7 @@ class ProductCard extends StatelessWidget {
                       Text(
                         '\$${product.price}',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           color: textColor,
                           fontFamily: "Times New Roman"
                         ),
@@ -166,7 +167,7 @@ class ProductCard extends StatelessWidget {
                             : Icon(Icons.star_border, color: starColor)
                           ),
                           Text(
-                            "${product.rate}  (${product.count})",
+                            " ${product.rate}  (${product.count})",
                             style: TextStyle(
                               color: textColor
                             ),
