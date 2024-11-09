@@ -123,9 +123,9 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 240,
+                width: MediaQuery.of(context).size.width - 160,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 8.0),
+                  padding: EdgeInsets.fromLTRB((MediaQuery.of(context).size.width > 600) ? 30.0 : 15.0, 8.0, 0.0, 8.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
