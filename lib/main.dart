@@ -61,8 +61,7 @@ class Product {
               count: json["rating"]["count"]
             );
     } catch (e){
-      print("fuck $e");
-      throw Exception("fuck $e");
+      throw Exception("Error in json $e");
     }
     
   }
@@ -81,20 +80,23 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Padding(
-      padding: const EdgeInsets.all(7.0),
+      padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.0),
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            width: 3,
+            width: 2,
           ),
           borderRadius: BorderRadius.circular(15.0),
         ),
         clipBehavior: Clip.antiAlias,
         child: SizedBox(
-          height: 200.0,
+          height: 210.0,
           width: MediaQuery.of(context).size.width - 20,
           child: Stack(
             children: <Widget>[
+              Container(
+                color:Colors.white,
+              ),
               Positioned(
                 right: 10,
                 child: Padding(
@@ -115,15 +117,15 @@ class ProductCard extends StatelessWidget {
                     end: Alignment.centerRight,
                     colors: [
                       cardColor.withOpacity(1),
-                      cardColor.withOpacity(0),
+                      cardColor.withOpacity(0.15),
                     ],
                   ),
                 ),
               ),
               SizedBox(
-                width: 280,
+                width: 240,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 8.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -132,28 +134,30 @@ class ProductCard extends StatelessWidget {
                       Text(
                         product.title,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                           color: textColor,
                         ),
                       ),
-                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 9.0),),
+                      Flexible(child: Container(constraints: BoxConstraints(maxHeight: 12.0),)),
                       Text(
                         product.category,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 19,
                           color: textColor,
+                          fontFamily: "Times New Roman"
                         ),
                       ),
-                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 7.0),),
+                      Flexible(child: Container(constraints: BoxConstraints(maxHeight: 7.0),)),
                       Text(
                         '\$${product.price}',
                         style: TextStyle(
                           fontSize: 18,
                           color: textColor,
+                          fontFamily: "Times New Roman"
                         ),
                       ),
-                      ConstrainedBox(constraints: BoxConstraints(maxHeight: 7.0),),
+                      Flexible(child: Container(constraints: BoxConstraints(maxHeight: 5.0),)),
                       Row(
                         children: [
                           ...List.generate(5, (int index) => 
@@ -172,7 +176,7 @@ class ProductCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -223,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: List.from(snapshot.data!.map((product) => ProductCard(product: product))),
                 );
               } else if(snapshot.hasError) {
-                return Text("Fuck 2 ${snapshot.error}");
+                return Text("Snapshot error: ${snapshot.error}");
               }
 
               return const CircularProgressIndicator();
